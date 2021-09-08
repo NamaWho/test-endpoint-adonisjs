@@ -2,7 +2,7 @@
 
 class InfoController {
     /**
-     * backend() - gets backend version retrieved by package.json file
+     * Gets backend version retrieved by package.json file
      */
     backend({ response }){
         // retrieve info

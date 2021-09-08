@@ -1,10 +1,11 @@
 'use strict'
+
 const User = use('App/Models/User');
 
 class AuthController {
 
   /**
-   * [DEV]
+   * [DEV_ONLY]
    * Register a new user in the database
    */
   async register({request, response}) {
@@ -16,12 +17,13 @@ class AuthController {
    * Logs in an existent user, returning his jwt for next calls
    */
   async login({request, auth, response}) {
+    response.type('application/json')
 
     const {email, password} = request.all();
 
     try {
       if (await auth.attempt(email, password)) {
-        // get user info
+        // get user info, by unique field 'email'
         let user = await User.findBy('email', email)
         // generate jwt
         let token = await auth.generate(user)
@@ -33,11 +35,11 @@ class AuthController {
           "access_token" : token
         }
 
-        return response.json(obj)
+        return response.send(obj)
       }
     }
     catch (e) {
-      return response.json({message: 'Not yet registered'})
+      return response.send({message: 'Not yet registered'})
     }
   }
   

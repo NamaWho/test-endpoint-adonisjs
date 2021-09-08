@@ -5,11 +5,23 @@ const User = use('App/Models/User')
 
 class UserController {
 
+    
+    /**
+     * [DEV_ONLY]
+     * Returns all the users
+     */ 
     async getAll ({response}){
+        response.type('application/json')
+
         response.send(await Database.table('users').select('*'))
     }
 
+    /**
+     * Returns user info
+     * User must provide his jwt token in order to view his personal details
+     */
     async getUser({ auth, params, response }){
+        response.type('application/json')
 
         // query params validation
         // userId must be integer value
@@ -19,21 +31,16 @@ class UserController {
       
         const validation = await validate(params, rules)
 
-        if (validation.fails()) {      
-            response.send({"message": "Not a number provided"});
-            return
-        }
+        if (validation.fails())
+            return response.send({"message": "Not a number provided"})
 
         // user can only see his personal info
-        if(auth.user.id != parseInt(params.userId)){
-            response.send({"message": "Can not see someone else's info"})
-            return
-        }
+        if(auth.user.id != parseInt(params.userId))
+            return response.send({"message": "Can not see someone else's info"})
       
         // send back info
-        const obj = await Database.table('users').where('id', '=', params.userId);
+        const obj = await Database.table('users').where('id', '=', params.userId)
 
-        response.type('application/json')
         response.send(obj);
     }
 
