@@ -9,7 +9,7 @@ class AuthController {
    * Register a new user in the database
    */
   async register({request, response}) {
-    let user = await User.create(request.all())
+    const user = await User.create(request.all())
     return response.json(user)
   }
 
@@ -42,7 +42,6 @@ class AuthController {
       return response.send({message: 'Not yet registered'})
     }
   }
-  
 }
 
 module.exports = AuthController
