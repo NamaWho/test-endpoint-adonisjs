@@ -12,7 +12,7 @@ Route.get('/', 'InfoController.backend')
 Route.get('/api/v1/user/:userId', 'UserController.getUser').middleware(['auth'])
 
 // POST - login user (if not yet logged)
-Route.post('/api/v1/auth/login', 'AuthController.login').middleware(['guest'])
+Route.post('/api/v1/login', 'AuthController.login').middleware(['guest'])
 
 /* ---------------------------- */
 
