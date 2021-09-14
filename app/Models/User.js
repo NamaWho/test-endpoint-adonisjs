@@ -20,7 +20,7 @@ class User extends Model {
       }
 
       if (!userInstance.is_admin){
-        userInstance.is_admin = false
+        userInstance.is_admin = 'false'
       }
     })
   }

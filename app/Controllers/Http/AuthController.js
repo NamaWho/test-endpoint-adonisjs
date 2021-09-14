@@ -12,9 +12,9 @@ class AuthController {
     const {email, password} = request.only(['email', 'password'])
     let user 
 
+    // ensure there's already an instance with given email
+    // if it's there, then save user info
     try {
-      // ensure there's already an instance with given email
-      // if it's there, then save user info
       user = await User.findByOrFail('email', email)
     } catch (e) {
       return response.unprocessableEntity()
@@ -22,8 +22,6 @@ class AuthController {
 
     try {
       if (await auth.attempt(email, password)) {
-        // get user info, by unique field 'email'
-        //let user = await User.findBy('email', email)
         // generate jwt
         const token = await auth.generate(user)
 

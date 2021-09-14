@@ -9,12 +9,8 @@ const BumblebeeTransformer = use('Bumblebee/Transformer')
  * @constructor
  */
 class UserTransformer extends BumblebeeTransformer {
-  /**
-   * This method is used to transform the data.
-   */
   transform (model) {
     return {
-     // add your transformation object here
      id: model.id,
      username: model.username,
      email: model.email
