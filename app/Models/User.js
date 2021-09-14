@@ -18,6 +18,10 @@ class User extends Model {
       if (userInstance.dirty.password) {
         userInstance.password = await Hash.make(userInstance.password)
       }
+
+      if (!userInstance.is_admin){
+        userInstance.is_admin = false
+      }
     })
   }
 

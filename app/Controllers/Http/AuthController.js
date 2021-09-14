@@ -5,28 +5,27 @@ const User = use('App/Models/User');
 class AuthController {
 
   /**
-   * [DEV_ONLY]
-   * Register a new user in the database
-   */
-  async register({request, response}) {
-    const user = await User.create(request.all())
-    return response.json(user)
-  }
-
-  /**
+   * [Validator: 'guest']
    * Logs in an existent user, returning his jwt for next calls
    */
-  async login({request, auth, response}) {
-    response.type('application/json')
+  async login({request, response, auth}) {
+    const {email, password} = request.only(['email', 'password'])
+    let user 
 
-    const {email, password} = request.all();
+    try {
+      // ensure there's already an instance with given email
+      // if it's there, then save user info
+      user = await User.findByOrFail('email', email)
+    } catch (e) {
+      return response.unprocessableEntity()
+    }
 
     try {
       if (await auth.attempt(email, password)) {
         // get user info, by unique field 'email'
-        let user = await User.findBy('email', email)
+        //let user = await User.findBy('email', email)
         // generate jwt
-        let token = await auth.generate(user)
+        const token = await auth.generate(user)
 
         // parse object to return
         let obj = {
@@ -35,11 +34,11 @@ class AuthController {
           "access_token" : token
         }
 
-        return response.send(obj)
+        return obj
       }
     }
     catch (e) {
-      return response.send({message: 'Not yet registered'})
+      return {message: 'Not yet registered'}
     }
   }
 }

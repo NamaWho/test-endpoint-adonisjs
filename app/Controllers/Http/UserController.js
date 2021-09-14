@@ -1,47 +1,49 @@
 'use strict'
-const { validate } = use('Validator')
-const Database = use('Database')
 const User = use('App/Models/User')
+const UserTransformer = use('App/Transformers/UserTransformer')
 
 class UserController {
 
     
     /**
-     * [DEV_ONLY]
+     * [Validator: 'Admin']
      * Returns all the users
      */ 
-    async getAll ({response}){
-        response.type('application/json')
-
-        response.send(await Database.table('users').select('*'))
+    async index({transform}){
+        const users = await User.all()
+        return transform.collection(users, UserTransformer)
     }
 
     /**
+     * [Validator: 'CreateUser']
+     * Register a new user in the database
+     */
+    async create({request, response}) {
+        const userData = request.only(['username', 'email', 'password', 'is_admin'])
+
+        // search for an existing instance with given username or email 
+        if (await User.findBy('email', userData.email) || await User.findBy('username', userData.username))
+            return response.unprocessableEntity()
+        
+        const user = await User.create(userData)
+        return user
+    }
+
+    /**
+     * [Validator: 'ShowUser']
      * Returns user info
      * User must provide his jwt token in order to view his personal details
      */
-    async getUser({ auth, params, response }){
-        response.type('application/json')
-
-        // query params validation
-        // userId must be integer value
-        const rules = {
-            userId: 'integer'
-        }
-      
-        const validation = await validate(params, rules)
-
-        if (validation.fails())
-            return response.send({"message": "Not a number provided"})
+    async show({ auth, params }){
 
         // user can only see his personal info
         if(auth.user.id != parseInt(params.userId))
-            return response.send({"message": "Can not see someone else's info"})
+            return {"message": "Can not see someone else's info"}
       
         // send back info
-        const obj = await Database.table('users').where('id', '=', params.userId)
+        const obj = await User.query().where('id', '=', params.userId).setHidden(['password']).fetch()
 
-        response.send(obj);
+        return obj
     }
 
 }
