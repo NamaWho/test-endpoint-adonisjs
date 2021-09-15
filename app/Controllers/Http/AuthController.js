@@ -18,7 +18,7 @@ class AuthController {
     try {
       user = await User.findByOrFail('email', email)
     } catch (e) {
-      return response.unprocessableEntity()
+      return response.unprocessableEntity('Email not yet registered')
     }
 
     try {
@@ -37,7 +37,7 @@ class AuthController {
       }
     }
     catch (e) {
-      return {message: 'Not yet registered'}
+      return response.unauthorized('Invalid password')
     }
   }
 }

@@ -7,7 +7,12 @@ class InfoController {
      */
     backend({ response }){
         // retrieve info
-        const { name, version } = require('../../../package.json')
+        try {
+            const { name, version } = require('../../../package.json')
+        } catch (error) {
+            response.serviceUnavailable('Service Unavailable')
+        }
+        
         const obj = {
             "name" : name,
             "version" : version
