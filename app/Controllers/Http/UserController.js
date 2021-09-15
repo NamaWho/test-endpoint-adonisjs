@@ -6,7 +6,8 @@ class UserController {
 
     
     /**
-     * [Validator: 'Admin']
+     * [Validator: 'isAdmin']
+     * [Middleware: 'auth']
      * Returns all the users
      */ 
     async index({transform}){
@@ -31,17 +32,21 @@ class UserController {
 
     /**
      * [Validator: 'ShowUser']
+     * [Middleware: 'auth']
      * Returns user info
      * User must provide his jwt token in order to view his personal details
      */
-    async show({ auth, params }){
+    async show({ auth, params, response }){
 
         // user can only see his personal info
         if(auth.user.id != parseInt(params.userId))
-            return {"message": "Can not see someone else's info"}
+            return response.unprocessableEntity('Can not see someone else\'s info')
       
         // send back info
-        const obj = await User.query().where('id', '=', params.userId).setHidden(['password']).fetch()
+        const obj = await User
+                            .query()
+                            .where('id', '=', params.userId)
+                            .fetch()
 
         return obj
     }

@@ -5,7 +5,8 @@ const User = use('App/Models/User');
 class AuthController {
 
   /**
-   * [Validator: 'guest']
+   * [Validator: 'Login']
+   * [Middleware: 'guest']
    * Logs in an existent user, returning his jwt for next calls
    */
   async login({request, response, auth}) {
